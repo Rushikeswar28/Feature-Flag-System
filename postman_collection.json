@@ -1,0 +1,160 @@
+{
+  "info": {
+    "name": "Multi-Tenant Feature Flag System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api" },
+    { "key": "superAdminToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "userToken", "value": "" },
+    { "key": "orgId", "value": "" },
+    { "key": "flagId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Super Admin",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin\",\n  \"password\": \"admin123\"\n}" },
+            "url": "{{baseUrl}}/super-admin/login"
+          }
+        },
+        {
+          "name": "Create Organization",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{superAdminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Acme Corp\"\n}" },
+            "url": "{{baseUrl}}/organizations"
+          }
+        },
+        {
+          "name": "List Organizations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{superAdminToken}}" }],
+            "url": "{{baseUrl}}/organizations"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Public",
+      "item": [
+        {
+          "name": "List Organizations (public, for signup dropdown)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/organizations/public"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Org Admin",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@acme.com\",\n  \"password\": \"password123\",\n  \"organizationId\": 1\n}" },
+            "url": "{{baseUrl}}/admin/signup"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@acme.com\",\n  \"password\": \"password123\"\n}" },
+            "url": "{{baseUrl}}/admin/login"
+          }
+        },
+        {
+          "name": "Create Feature Flag",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"featureKey\": \"dark_mode\",\n  \"enabled\": true\n}" },
+            "url": "{{baseUrl}}/flags"
+          }
+        },
+        {
+          "name": "List Feature Flags",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/flags"
+          }
+        },
+        {
+          "name": "Update Feature Flag",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"enabled\": false\n}" },
+            "url": "{{baseUrl}}/flags/{{flagId}}"
+          }
+        },
+        {
+          "name": "Delete Feature Flag",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/flags/{{flagId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. End User",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"End User\",\n  \"email\": \"user@acme.com\",\n  \"password\": \"password123\",\n  \"organizationId\": 1\n}" },
+            "url": "{{baseUrl}}/user/signup"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@acme.com\",\n  \"password\": \"password123\"\n}" },
+            "url": "{{baseUrl}}/user/login"
+          }
+        },
+        {
+          "name": "Check Feature",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{userToken}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"featureKey\": \"dark_mode\"\n}" },
+            "url": "{{baseUrl}}/user/check-feature"
+          }
+        }
+      ]
+    }
+  ]
+}
